@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2e7d32">
+    <title>🌾 Salam Agri Helper</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f5f5f5;
+        }
+
+        .app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-info {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .app-content {
+            flex: 1;
+            padding: 1rem;
+            padding-bottom: 80px;
+            overflow-y: auto;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .bottom-nav button {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            font-size: 0.75rem;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 8px;
+            min-width: 70px;
+        }
+
+        .bottom-nav button.active {
+            color: #2e7d32;
+            background: #e8f5e9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #2e7d32;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-secondary {
+            background: #757575;
+        }
+
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+        }
+
+        .language-selector {
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .language-select {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .login-card {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .login-form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        .app-title {
+            text-align: center;
+            color: #2e7d32;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #2e7d32;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .market-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .market-item:last-child {
+            border-bottom: none;
+        }
+
+        .price {
+            color: #2e7d32;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .contact-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+
+        .contact-item h3 {
+            color: #2e7d32;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-item p {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0.25rem 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background: #2e7d32;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="language-selector">
+            <select id="languageSelect" class="language-select">
+                <option value="english">English</option>
+                <option value="urdu">اردو</option>
+                <option value="sindhi">سنڌي</option>
+            </select>
+        </div>
+        
+        <div class="login-card">
+            <div class="login-form-container">
+                <h1 class="app-title">🌾 <span id="loginTitle">Salam Agri Helper</span></h1>
+                
+                <form id="loginForm">
+                    <input type="text" id="nameInput" class="input-field" placeholder="Name">
+                    <input type="email" id="emailInput" class="input-field" placeholder="Email" required>
+                    <input type="password" id="passwordInput" class="input-field" placeholder="Password" required>
+                    <button type="submit" class="btn">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="app hidden">
+        <header class="app-header">
+            <h1>🌾 <span id="appName">Salam Agri Helper</span></h1>
+            <div class="user-info">
+                <span id="welcomeText">Welcome</span>, <span id="userName"></span>
+            </div>
+        </header>
+
+        <main class="app-content">
+            <!-- Dashboard -->
+            <div id="dashboardPage">
+                <div class="stats-grid">
+                    <div class="stat-card" onclick="showPage('crops')">
+                        <h3>🌾</h3>
+                        <p id="cropsText">Crops</p>
+                    </div>
+                    <div class="stat-card" onclick="showPage('animals')">
+                        <h3>🐄</h3>
+                        <p id="animalsText">Animals</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>🌾 <span id="welcomeTitle">Welcome to Salam Agri Helper</span></h2>
+                    <p id="welcomeDesc" style="color: #666; line-height: 1.6;">
+                        Complete agriculture and livestock management system with disease detection, market rates, and expert contacts.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Crops Page -->
+            <div id="cropsPage" class="hidden">
+                <div class="card">
+                    <h2>🌾 <span id="cropsPageTitle">Crops Section</span></h2>
+                    
+                    <div class="tabs">
+                        <button class="tab active" onclick="showCropTab('market')">💰 Market Rates</button>
+                        <button class="tab" onclick="showCropTab('doctors')">👨‍⚕️ Doctors</button>
+                        <button class="tab" onclick="showCropTab('shops')">🏪 Shops</button>
+                    </div>
+
+                    <div id="cropMarket">
+                        <h3>Market Rates - Karachi</h3>
+                        <div class="market-item">
+                            <div><strong>Wheat / گندم</strong></div>
+                            <div class="price">Rs. 3,500 per kg</div>
+                        </div>
+                        <div class="market-item">
+                            <div><strong>Rice / چاول</strong></div>
+                            <div class="price">Rs. 8,000 per kg</div>
+                        </div>
+                        <div class="market-item">
+                            <div><strong>Cotton / کپاس</strong></div>
+                            <div class="price">Rs. 12,000 per kg</div>
+                        </div>
+                    </div>
+
+                    <div id="cropDoctors" class="hidden">
+                        <div class="contact-item">
+                            <h3>Dr. Ahmed Ali / ڈاکٹر احمد علی</h3>
+                            <p>📱 +92 300 1234567</p>
+                            <p>📍 Karachi, Sindh</p>
+                            <p>🎯 Specialty: Crop Diseases</p>
+                            <a href="tel:+923001234567" class="btn">📞 Call</a>
+                        </div>
+                    </div>
+
+                    <div id="cropShops" class="hidden">
+                        <div class="contact-item">
+                            <h3>Green Valley Agro Store</h3>
+                            <p>📱 +92 303 4567890</p>
+                            <p>📍 Saddar, Karachi</p>
+                            <p>🛒 Products: Seeds, Fertilizers, Tools</p>
+                            <a href="tel:+923034567890" class="btn">📞 Call</a>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary" onclick="showPage('dashboard')">Back to Home</button>
+                </div>
+            </div>
+
+            <!-- Animals Page -->
+            <div id="animalsPage" class="hidden">
+                <div class="card">
+                    <h2>🐄 <span id="animalsPageTitle">Animals Section</span></h2>
+                    
+                    <div class="tabs">
+                        <button class="tab active" onclick="showAnimalTab('market')">💰 Market Rates</button>
+                        <button class="tab" onclick="showAnimalTab('doctors')">👨‍⚕️ Veterinary</button>
+                        <button class="tab" onclick="showAnimalTab('shops')">🏪 Feed Shops</button>
+                    </div>
+
+                    <div id="animalMarket">
+                        <h3>Livestock Market - Karachi</h3>
+                        <div class="market-item">
+                            <div><strong>Cow / گائے</strong></div>
+                            <div class="price">Rs. 150,000 per animal</div>
+                        </div>
+                        <div class="market-item">
+                            <div><strong>Buffalo / بھینس</strong></div>
+                            <div class="price">Rs. 200,000 per animal</div>
+                        </div>
+                        <div class="market-item">
+                            <div><strong>Goat / بکری</strong></div>
+                            <div class="price">Rs. 25,000 per animal</div>
+                        </div>
+                    </div>
+
+                    <div id="animalDoctors" class="hidden">
+                        <div class="contact-item">
+                            <h3>Dr. Fatima Khan / ڈاکٹر فاطمہ خان</h3>
+                            <p>📱 +92 301 2345678</p>
+                            <p>📍 Hyderabad, Sindh</p>
+                            <p>🎯 Specialty: Veterinary</p>
+                            <a href="tel:+923012345678" class="btn">📞 Call</a>
+                        </div>
+                    </div>
+
+                    <div id="animalShops" class="hidden">
+                        <div class="contact-item">
+                            <h3>Animal Feed Center</h3>
+                            <p>📱 +92 304 5678901</p>
+                            <p>📍 Latifabad, Hyderabad</p>
+                            <p>🛒 Products: Animal Feed, Supplements</p>
+                            <a href="tel:+923045678901" class="btn">📞 Call</a>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary" onclick="showPage('dashboard')">Back to Home</button>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settingsPage" class="hidden">
+                <div class="card">
+                    <h2>⚙️ <span id="settingsTitle">Settings</span></h2>
+                    
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">
+                        <span id="languageLabel">Language</span>
+                    </label>
+                    <select id="settingsLanguage" class="input-field">
+                        <option value="english">English</option>
+                        <option value="urdu">اردو (Urdu)</option>
+                        <option value="sindhi">سنڌي (Sindhi)</option>
+                    </select>
+
+                    <button class="btn btn-secondary" onclick="logout()" style="margin-top: 2rem;">
+                        🚪 <span id="logoutText">Logout</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <button id="navHome" class="active" onclick="showPage('dashboard')">
+                🏠<br/><span id="navHomeText">Home</span>
+            </button>
+            <button id="navCrops" onclick="showPage('crops')">
+                🌾<br/><span id="navCropsText">Crops</span>
+            </button>
+            <button id="navAnimals" onclick="showPage('animals')">
+                🐄<br/><span id="navAnimalsText">Animals</span>
+            </button>
+            <button id="navSettings" onclick="showPage('settings')">
+                ⚙️<br/><span id="navSettingsText">Settings</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        const translations = {
+            english: {
+                appName: 'Salam Agri Helper',
+                welcome: 'Welcome',
+                home: 'Home',
+                crops: 'Crops',
+                animals: 'Animals',
+                settings: 'Settings',
+                logout: 'Logout',
+                language: 'Language'
+            },
+            urdu: {
+                appName: 'سلام ایگری ہیلپر',
+                welcome: 'خوش آمدید',
+                home: 'ہوم',
+                crops: 'فصلیں',
+                animals: 'جانور',
+                settings: 'ترتیبات',
+                logout: 'لاگ آؤٹ',
+                language: 'زبان'
+            },
+            sindhi: {
+                appName: 'سلام ايگري هيلپر',
+                welcome: 'ڇلي ڪري آيا',
+                home: 'گهر',
+                crops: 'فصل',
+                animals: 'جانور',
+                settings: 'سيٽنگون',
+                logout: 'لاگ آئوٽ',
+                language: 'ٻولي'
+            }
+        };
+
+        let currentLanguage = 'english';
+        let currentUser = null;
+
+        // Check if user is already logged in
+        window.onload = function() {
+            const savedUser = localStorage.getItem('user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showMainApp();
+            }
+        };
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('nameInput').value || document.getElementById('emailInput').value.split('@')[0];
+            const email = document.getElementById('emailInput').value;
+            
+            currentUser = { name, email };
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            showMainApp();
+        });
+
+        // Language selector
+        document.getElementById('languageSelect').addEventListener('change', function(e) {
+            currentLanguage = e.target.value;
+            updateLanguage();
+        });
+
+        document.getElementById('settingsLanguage').addEventListener('change', function(e) {
+            currentLanguage = e.target.value;
+            updateLanguage();
+        });
+
+        function showMainApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('userName').textContent = currentUser.name;
+            updateLanguage();
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            currentUser = null;
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+        }
+
+        function showPage(page) {
+            // Hide all pages
+            document.getElementById('dashboardPage').classList.add('hidden');
+            document.getElementById('cropsPage').classList.add('hidden');
+            document.getElementById('animalsPage').classList.add('hidden');
+            document.getElementById('settingsPage').classList.add('hidden');
+
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.bottom-nav button').forEach(btn => btn.classList.remove('active'));
+
+            // Show selected page
+            if (page === 'dashboard') {
+                document.getElementById('dashboardPage').classList.remove('hidden');
+                document.getElementById('navHome').classList.add('active');
+            } else if (page === 'crops') {
+                document.getElementById('cropsPage').classList.remove('hidden');
+                document.getElementById('navCrops').classList.add('active');
+            } else if (page === 'animals') {
+                document.getElementById('animalsPage').classList.remove('hidden');
+                document.getElementById('navAnimals').classList.add('active');
+            } else if (page === 'settings') {
+                document.getElementById('settingsPage').classList.remove('hidden');
+                document.getElementById('navSettings').classList.add('active');
+            }
+        }
+
+        function showCropTab(tab) {
+            document.getElementById('cropMarket').classList.add('hidden');
+            document.getElementById('cropDoctors').classList.add('hidden');
+            document.getElementById('cropShops').classList.add('hidden');
+            
+            if (tab === 'market') document.getElementById('cropMarket').classList.remove('hidden');
+            else if (tab === 'doctors') document.getElementById('cropDoctors').classList.remove('hidden');
+            else if (tab === 'shops') document.getElementById('cropShops').classList.remove('hidden');
+        }
+
+        function showAnimalTab(tab) {
+            document.getElementById('animalMarket').classList.add('hidden');
+            document.getElementById('animalDoctors').classList.add('hidden');
+            document.getElementById('animalShops').classList.add('hidden');
+            
+            if (tab === 'market') document.getElementById('animalMarket').classList.remove('hidden');
+            else if (tab === 'doctors') document.getElementById('animalDoctors').classList.remove('hidden');
+            else if (tab === 'shops') document.getElementById('animalShops').classList.remove('hidden');
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            
+            // Update all text elements
+            document.getElementById('loginTitle').textContent = t.appName;
+            document.getElementById('appName').textContent = t.appName;
+            document.getElementById('welcomeText').textContent = t.welcome;
+            document.getElementById('cropsText').textContent = t.crops;
+            document.getElementById('animalsText').textContent = t.animals;
+            document.getElementById('navHomeText').textContent = t.home;
+            document.getElementById('navCropsText').textContent = t.crops;
+            document.getElementById('navAnimalsText').textContent = t.animals;
+            document.getElementById('navSettingsText').textContent = t.settings;
+            document.getElementById('settingsTitle').textContent = t.settings;
+            document.getElementById('languageLabel').textContent = t.language;
+            document.getElementById('logoutText').textContent = t.logout;
+            
+            // Update language selects
+            document.getElementById('languageSelect').value = currentLanguage;
+            document.getElementById('settingsLanguage').value = currentLanguage;
+        }
+    </script>
+</body>
+</html>
